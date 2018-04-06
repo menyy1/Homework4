@@ -43,8 +43,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
@@ -102,17 +100,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem)
-    {
-        switch (menuItem.getItemId()) {
-            case android.R.id.activity_address:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(menuItem);
-        }
-    }
 
 //    public void onClick(View view){
 //
