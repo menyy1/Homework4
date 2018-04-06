@@ -1,6 +1,7 @@
 package com.example.erasable;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -11,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -40,9 +42,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Intent intent = getIntent();
-//        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-//        this.location = message;
+
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        Intent intent = getIntent();
+        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        this.location = message;
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -67,24 +73,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-//        List<Address> addressList = null;
-//        MarkerOptions mo = new MarkerOptions();
-//        if(!location.equals("")){
-//            Geocoder geocoder = new Geocoder(this);
-//            try {
-//                addressList = geocoder.getFromLocationName(location, 5);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            for(int i=0; i<addressList.size(); i++){
-//                Address myAddress= addressList.get(i);
-//                LatLng latlng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-//                mo.position(latlng);
-//                mo.title(location);
-//                mMap.addMarker(mo);
-//                mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng));
-//            }
-//        }
+
+
+        List<Address> addressList = null;
+        MarkerOptions mo = new MarkerOptions();
+        if(!location.equals("")){
+            mMap.clear();
+            Geocoder geocoder = new Geocoder(this);
+            try {
+                addressList = geocoder.getFromLocationName(location, 5);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            for(int i=0; i<addressList.size(); i++){
+                Address myAddress= addressList.get(i);
+                LatLng latlng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
+                mo.position(latlng);
+                mo.title(location);
+                mMap.addMarker(mo);
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng));
+            }
+        }
 
 //        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
 //        {
@@ -93,30 +102,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        }
     }
 
-    public void onClick(View view){
-        if(view.getId() == R.id.B_search){
-            EditText address_loc = (EditText)findViewById(R.id.address_loc);
-            String location = address_loc.getText().toString();
-            List<Address> addressList = null;
-            MarkerOptions mo = new MarkerOptions();
-            if(!location.equals("")){
-                Geocoder geocoder = new Geocoder(this);
-                try {
-                    addressList = geocoder.getFromLocationName(location, 5);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                for(int i=0; i<addressList.size(); i++){
-                    Address myAddress= addressList.get(i);
-                    LatLng latlng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-                    mo.position(latlng);
-                    mo.title(location);
-                    mMap.addMarker(mo);
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng));
-                }
-            }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem)
+    {
+        switch (menuItem.getItemId()) {
+            case android.R.id.activity_address:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
         }
     }
+
+//    public void onClick(View view){
+//
+//        if(view.getId() == R.id.B_search){
+//            EditText address_loc = (EditText)findViewById(R.id.address_loc);
+//            String location = address_loc.getText().toString();
+//            List<Address> addressList = null;
+//            MarkerOptions mo = new MarkerOptions();
+//            if(!location.equals("")){
+//                mMap.clear();
+//                Geocoder geocoder = new Geocoder(this);
+//                try {
+//                    addressList = geocoder.getFromLocationName(location, 5);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                for(int i=0; i<addressList.size(); i++){
+//                    Address myAddress= addressList.get(i);
+//                    LatLng latlng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
+//                    mo.position(latlng);
+//                    mo.title(location);
+//                    mMap.addMarker(mo);
+//                    mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng));
+//                }
+//            }
+//        }
+//    }
 
     protected synchronized void buildGoogleApiClient(){
         client = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
